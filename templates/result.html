@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نتائج تحليل استبيانات رضا الطلاب</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* قاعدة شاملة لتوحيد تصميم العناصر */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        background-color: #f9fafb;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        direction: rtl;
+      }
+      header {
+        background: linear-gradient(45deg, #001f3d, #003366);
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+      }
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 30px auto;
+      }
+      .section {
+        background-color: #fff;
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .section h2 {
+        text-align: center;
+        color: #001f3d;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #001f3d;
+        padding-bottom: 10px;
+      }
+      .section h3 {
+        color: #003366;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+      .info-list,
+      .analysis-list,
+      .score-list,
+      .feedback-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 18px;
+      }
+      .info-list li,
+      .analysis-list li,
+      .score-list li,
+      .feedback-list li {
+        background-color: #f1f1f1;
+        margin: 10px 0;
+        padding: 12px;
+        border-radius: 5px;
+      }
+      .feedback-item {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+      }
+      .feedback-item:last-child {
+        border-bottom: none;
+      }
+      .sentiment {
+        font-weight: bold;
+        color: #005500;
+      }
+      .sentiment.s_negative {
+        color: #b30000;
+      }
+      .overall-satisfaction {
+        text-align: center;
+        font-size: 24px;
+        margin-top: 20px;
+        color: #c9a27d;
+        font-weight: bold;
+      }
+      footer {
+        background-color: #001f3d;
+        color: #fff;
+        text-align: center;
+        padding: 15px;
+        margin-top: 30px;
+      }
+      @media screen and (max-width: 768px) {
+        .info-list li,
+        .analysis-list li,
+        .score-list li,
+        .feedback-list li {
+          font-size: 16px;
+        }
+        header {
+          font-size: 22px;
+        }
+        .overall-satisfaction {
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>نتائج تحليل استبيانات رضا الطلاب</header>
+    <div class="container">
+      <!-- قسم معلومات المقرر -->
+      <div class="section">
+        <h2>معلومات المقرر</h2>
+        <ul class="info-list">
+          <li><strong>اسم المقرر:</strong> {{ course_info['course_name'] }}</li>
+          <li>
+            <strong>اسم البرنامج (القسم):</strong>
+            {{ course_info['program_name'] }}
+          </li>
+          <li><strong>الفصل الدراسي:</strong> {{ course_info['semester'] }}</li>
+          <li><strong>السنة:</strong> {{ course_info['year'] }}</li>
+        </ul>
+      </div>
+
+      <!-- قسم تحليل الأسئلة -->
+      <div class="section">
+        <h2>تحليل الأسئلة</h2>
+        <!-- أسئلة بداية المقرر -->
+        <h3>بداية المقرر</h3>
+        <ul class="analysis-list">
+          {% for question, count in analysis['beginning_clarity'].items() %}
+          <li>
+            <strong>{{ question }}:</strong> {{ count }} إجابة "أوافق بشدة"
+          </li>
+          {% endfor %}
+        </ul>
+        <!-- أسئلة ما حدث خلال المقرر -->
+        <h3>ما حدث خلال المقرر</h3>
+        <ul class="analysis-list">
+          {% for question, count in analysis['during_clarity'].items() %}
+          <li>
+            <strong>{{ question }}:</strong> {{ count }} إجابة "أوافق بشدة"
+          </li>
+          {% endfor %}
+        </ul>
+        <!-- أسئلة التقويم العام -->
+        <h3>التقويم العام</h3>
+        <ul class="analysis-list">
+          {% for question, count in analysis['overall_satisfaction'].items() %}
+          <li>
+            <strong>{{ question }}:</strong> {{ count }} إجابة "أوافق بشدة"
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- قسم التقييم المرجّح لكل سؤال -->
+      <div class="section">
+        <h2>التقييم المرجّح لكل سؤال</h2>
+        <ul class="score-list">
+          {% for question, score in weighted_scores.items() %}
+          <li><strong>{{ question }}:</strong> متوسط التقييم: {{ score }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- قسم تعليقات الطلاب مع تحليل المشاعر -->
+      <div class="section">
+        <h2>تعليقات الطلاب مع تحليل المشاعر</h2>
+        {% for feedback_key, feedback_items in feedback.items() %}
+        <h3>{{ feedback_key }}</h3>
+        <ul class="feedback-list">
+          {% for item in feedback_items %}
+          <li class="feedback-item">
+            <p>{{ item.text }}</p>
+            <p>
+              التصنيف:
+              <span
+                class="sentiment {% if item.sentiment == 'سلبي' %}s_negative{% endif %}"
+              >
+                {{ item.sentiment }}
+              </span>
+            </p>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endfor %}
+      </div>
+
+      <!-- قسم نسبة الرضا العام -->
+      <div class="overall-satisfaction">
+        نسبة رضا الطلاب: %{{ satisfaction }}
+      </div>
+    </div>
+    <footer>&copy; 2025 تحليل استبيانات رضا الطلاب</footer>
+  </body>
+</html>
