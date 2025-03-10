@@ -4,14 +4,8 @@ from transformers import pipeline
 
 app = Flask(__name__)
 
-
-sentiment_pipeline = pipeline("text-classification", model="CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment")
-
 def analyze_sentiment(text):
-    """
-    تستخدم هذه الدالة نموذج transformers لتحليل مشاعر النصوص العربية.
-    تُرجع الدالة: "إيجابي" إذا كانت النتيجة إيجابية، "سلبي" إذا كانت سلبية، أو "محايد" في حال حدوث خطأ.
-    """
+    sentiment_pipeline = pipeline("text-classification", model="CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment")
     try:
         result = sentiment_pipeline(text)
         label = result[0]['label']
